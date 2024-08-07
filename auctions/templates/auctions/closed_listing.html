@@ -1,0 +1,56 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+        <div class="listing-container">
+            <div class="listing_info">
+                {% if message %}
+                    <h2 style="text-align: center; background-color: rgba(212,237,218,255); color: rgba(49,101,68,255);">{{ message }}</h2>
+                {% endif %}
+                {% if messages %}
+                {% for message in messages %}
+                    <div style="text-align: center;" {% if message.tags %} class="alert {% if message.tags == 'success' %} alert-success {% elif message.tags == 'error' %} alert-danger{% endif %}"{% endif %}>{{ message }}</div>
+                {% endfor %}
+                {% endif %}      
+                <h3>Closed listing: {{listing.title}}</h3>
+                {% if not request.user.is_anonymous %}
+                    {% if watchlisted %}
+                    <form method="post" action="{% url 'closed_listing' title=listing.title %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="watchlist" value="remove">
+                        <button type="submit">Remove from a watchlist</button>
+                    </form>
+                    {% else %}
+                    <form method="post" action="{% url 'closed_listing' title=listing.title %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="watchlist" value="add">
+                        <button type="submit">Add to a watchlist</button>
+                    </form>
+                    {% endif %}
+                {% endif %}
+                {% if listing.image %}
+                <img class="image" src="{{ listing.image }}">
+                {% endif %}
+                <p><div class="header">Description:</div>{{ listing.description }}</p>
+                <h4><span class="header" style="margin-right: 10px;">Highest bid was:</span>${{ listing.highest_bid }}</h4>
+                <h6>{{ bid_number }} bid(s) were made in total.</h6>
+                <h4 class="header">Details:</h4>
+                <ul>
+                    <li><span class="small-header">Listed by:</span> {{ listing.user }}</li>
+                    <li><span class="small-header">Category:</span> {{ listing.category|default:"Uncategorized" }}</li>
+                </ul>
+                <h4>Comments:</h4>
+                {% if comments %}
+                {% for comment in comments %}
+                <div class="comment"><h6>{{comment.user}}</h6><div>{{ comment.comment }}</div></div>
+                {% endfor %}
+                {% endif %}
+                {% if not request.user.is_anonymous %}
+                <form method="post" action="{% url 'closed_listing' title=listing.title %}">
+                    {% csrf_token %}
+                    <textarea rows="5" cols="50" name="comment" placeholder="Make a comment"></textarea>
+                    <input class="comment-btn" type="submit" value="Write a comment">
+                </form>
+                {% endif %}
+            </div>
+        </div>
+{% endblock %}

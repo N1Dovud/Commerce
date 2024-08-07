@@ -1,0 +1,25 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% if messages %}
+        {% for message in messages %}
+            <div style="text-align: center;" {% if message.tags %} class="alert {% if message.tags == 'success' %} alert-success {% elif message.tags == 'error' %} alert-danger{% endif %}"{% endif %}>{{ message }}</div>
+        {% endfor %}
+    {% endif %}      
+    <h2>Active Listings</h2>
+    {% for listing in listings %}
+    <a class="listing_link" href="{% url 'listing_page' title=listing.title %}">
+        <div class="listing">
+            {% if listing.image %}
+            <img class="image"  src="{{ listing.image }}">
+            {% endif %}
+            <div style="width: 100%; margin: 0;">
+                <h3 class="center">{{listing.title}}</h3>
+                <h4 class="center">Price: ${{ listing.highest_bid }}</h4>
+                <p class="center">{{ listing.description|truncatechars:50 }}<span class="learn_more">Learn more </span></p>
+                <h6 class="time_creation center">Created {{ listing.time }}</h6>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+{% endblock %}

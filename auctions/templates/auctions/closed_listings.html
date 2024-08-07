@@ -1,0 +1,20 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Closed Listings</h2>
+    {% for listing in listings %}
+    <a class="listing_link" href="{% url 'closed_listing' title=listing.title %}">
+        <div class="listing">
+            {% if listing.image %}
+            <img class="image" src="{{ listing.image }}">
+            {% endif %}
+            <div class="listing_info">
+                <h3 class="center">{{listing.title}}</h3>
+                <h4 class="center">Price: ${{ listing.highest_bid }}</h4>
+                <p class="center">{{ listing.description|truncatechars:50 }}<span class="learn_more">Learn more </span></p>
+                <h6 class="time_creation center">Created {{ listing.time }}</h6>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+{% endblock %}

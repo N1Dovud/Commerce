@@ -1,0 +1,68 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+        <div class="listing-container">
+            <div class="listing_info">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div style="text-align: center;" {% if message.tags %} class="alert {% if message.tags == 'success' %} alert-success {% elif message.tags == 'error' %} alert-danger{% endif %}"{% endif %}>{{ message }}</div>
+                    {% endfor %}
+                {% endif %}            
+                <h3 class="text-primary">Active listing: {{listing.title}}</h3>
+                {% if not request.user.is_anonymous %}
+                    {% if watchlisted %}
+                    <form method="post" action="{% url 'listing_page' title=listing.title %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="watchlist" value="remove">
+                        <button type="submit">Remove from a watchlist</button>
+                    </form>
+                    {% else %}
+                    <form method="post" action="{% url 'listing_page' title=listing.title %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="watchlist" value="add">
+                        <button type="submit">Add to a watchlist</button>
+                    </form>
+                    {% endif %}
+                {% endif %}
+                {% if listing.image %}
+                <img class="image" src="{{ listing.image }}">
+                {% endif %}
+                <p><div class="header">Description:</div>{{ listing.description }}</p>
+                <h4><span class="header" style="margin-right: 10px;">Highest bid:</span>${{ listing.highest_bid }}</h4>
+                <h6>{{ bid_number }} bid(s) so far.{% if current %} Your last bid is the current bid{% endif %}</h6>
+                {% if not request.user.is_anonymous %}
+                    <form method="post" action="{% url 'listing_page' title=listing.title %}">
+                        {% csrf_token %}
+                        <span>$</span><input type="number" step="0.01" name="bid" required placeholder="Bid">
+                        <input type="submit" value="Place Bid">
+                    </form>
+                {% endif %}
+                <h4 class="header">Details:</h4>
+                <ul>
+                    <li><span class="small-header">Listed by:</span> {{ listing.user }}</li>
+                    <li><span class="small-header">Category:</span> {{ listing.category|default:"Uncategorized" }}</li>
+                    <li><span class="small-header">Date of creation:</span> {{ listing.time }}</li>
+                </ul>
+                <h4 class="header">Comments:</h4>
+                {% if comments %}
+                {% for comment in comments %}
+                <div class="comment"><h6>{{comment.user}}</h6><div>{{ comment.comment }}</div></div>
+                {% endfor %}
+                {% endif %}
+                {% if not request.user.is_anonymous %}
+                    <form method="post" action="{% url 'listing_page' title=listing.title %}">
+                        {% csrf_token %}
+                        <textarea rows="5" cols="50" name="comment" placeholder="Make a comment"></textarea>
+                        <input class="comment-btn" type="submit" value="Write a comment">
+                    </form>
+                {% endif %}
+                {% if creator %}
+                <form style="width: 100%;" method="post" action="{% url 'listing_page' title=listing.title %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="close">
+                    <input class="close-btn" type="submit" value="Close the listing" class="close">
+                </form>
+                {% endif %}
+            </div>
+        </div>
+{% endblock %}
