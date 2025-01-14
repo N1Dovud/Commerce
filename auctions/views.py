@@ -81,13 +81,11 @@ def create(request):
             time = datetime.now().strftime("%b %d, %Y, %I:%M %p")
             listing = Listing.objects.create(user=request.user, title=title, highest_bid=starting_bid, description=description, starting_bid=starting_bid, image=image,time=time, category=category)
             bid = Bid.objects.create(user=request.user, listing=listing, bid_amount=starting_bid)
-            # I think this part is unnecessary! comment = Comment.objects.create(user=request.user, comment="", listing=listing)
-            # comment.save()
             listing.save()
             bid.save()
             messages.success(request, "Successfully created!!")
             return redirect("index")
-            #in exception display a message
+            # display a message
         except Exception as e:
             messages.error(request, e)
             return render(request, "auctions/create.html")
